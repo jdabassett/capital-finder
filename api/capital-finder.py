@@ -4,7 +4,7 @@ from urllib import parse
 from datetime import datetime
 import requests
 
-class capitol_finder(BaseHTTPRequestHandler):
+class handler(BaseHTTPRequestHandler):
 
     def parse_url(self):
         str_url = self.path
@@ -81,7 +81,7 @@ class capitol_finder(BaseHTTPRequestHandler):
 
 if __name__ == '__main__':
     server_address = ('localhost',8000)
-    httpd = HTTPServer(server_address,capitol_finder)
+    httpd = HTTPServer(server_address,handler)
     print(f"Starting httpd server on {server_address[0]}:{server_address[1]}")
     httpd.serve_forever()
 
