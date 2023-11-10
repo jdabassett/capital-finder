@@ -33,7 +33,10 @@ class handler(BaseHTTPRequestHandler):
 
         # make get request
         str_url_name = f"https://restcountries.com/v3.1/{endpoint}/{value}?fields=name,capital,currencies,languages,population"
-        obj_res = requests.get(str_url_name)
+        try:
+            obj_res = requests.get(str_url_name)
+        except Exception as e:
+            return "Request failed, watch spelling of query labels and parameters. IE 'country=france&capital=paris'"
 
         # select most populous country from returned list
         dict_data = sorted(obj_res.json(), key=lambda x: x['population'], reverse=True)[0]
@@ -41,7 +44,7 @@ class handler(BaseHTTPRequestHandler):
         # extract country
         str_country = dict_data.get('name').get('common').title()
         # extract capital
-        str_capital = self.parse_list([i.title().replace(".","") for i in dict_data.get('capital')],"and")
+        str_capital = self.parse_list([i.title() for i in dict_data.get('capital')],"and")
         # extract languages
         str_languages = self.parse_list([j.title() for k,j in dict_data.get('languages').items()])
         # extract currencies
@@ -57,10 +60,10 @@ class handler(BaseHTTPRequestHandler):
 
         # if country and capital in query, only return boolean response
         if 'country' in dict_queries and 'capital' in dict_queries:
-            del dict_queries['country']
-            del dict_queries['capital']
-            del dict_queries['languages']
-            del dict_queries['currencies']
+            dict_queries.pop('country',None)
+            dict_queries.pop('capital',None)
+            dict_queries.pop('languages',None)
+            dict_queries.pop('currencies',None)
             dict_queries['capital_country']=True
 
         return "\n".join([dict_return[key] for key,value in dict_queries.items()])
